@@ -276,10 +276,12 @@ async fn execute(
     match log_store.write_commit_entry(commit_version, commit).await {
         Ok(_) => {}
         Err(err @ TransactionError::VersionAlreadyExists(_)) => {
+            println!("TransactionError::VersionAlreadyExists");
             return Err(err.into());
         }
         Err(err) => {
             log_store.object_store().delete(commit).await?;
+            println!("ERROR IN COMMIT {:?}", err);
             return Err(err.into());
         }
     }
