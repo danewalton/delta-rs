@@ -410,6 +410,7 @@ impl<'a> CommitBuilder {
         operation: DeltaOperation,
     ) -> Result<PreCommit<'a>, CommitBuilderError> {
         let data = CommitData::new(self.actions, operation, self.app_metadata)?;
+        println!("CommitBuilder::build {:#?}", data);
         Ok(PreCommit {
             log_store,
             table_data,
@@ -455,6 +456,7 @@ impl<'a> PreCommit<'a> {
 
             // Write delta log entry as temporary file to storage. For the actual commit,
             // the temporary file is moved (atomic rename) to the delta log folder within `commit` function.
+            println!("in into_prepared_commit_future");
             let token = uuid::Uuid::new_v4().to_string();
             let file_name = format!("_commit_{token}.json.tmp");
             let path = Path::from_iter([DELTA_LOG_FOLDER, &file_name]);
