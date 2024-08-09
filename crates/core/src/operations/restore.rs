@@ -146,6 +146,7 @@ async fn execute(
     protocol_downgrade_allowed: bool,
     mut commit_properties: CommitProperties,
 ) -> DeltaResult<RestoreMetrics> {
+    println!("EXECUTING");
     if !(version_to_restore
         .is_none()
         .bitxor(datetime_to_restore.is_none()))
@@ -265,6 +266,7 @@ async fn execute(
         datetime: datetime_to_restore.map(|time| -> i64 { time.timestamp_millis() }),
     };
 
+    println!("PREPARING COMMIT");
     let prepared_commit = CommitBuilder::from(commit_properties)
         .with_actions(actions)
         .build(Some(&snapshot), log_store.clone(), operation)?
@@ -273,6 +275,7 @@ async fn execute(
 
     let commit_version = snapshot.version() + 1;
     let commit = prepared_commit.path();
+    println!("COMMITTING");
     match log_store.write_commit_entry(commit_version, commit).await {
         Ok(_) => {}
         Err(err @ TransactionError::VersionAlreadyExists(_)) => {
